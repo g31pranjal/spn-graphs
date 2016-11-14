@@ -1,5 +1,5 @@
 from nltk.tree import Tree
-
+import np_parser
 
 
 
@@ -9,7 +9,7 @@ def getVP(root) :
 		return list()
 
 	else :
-		print root
+		# print root
 
 		rootLength = root.height()
 		sentence = root[0]
@@ -18,8 +18,8 @@ def getVP(root) :
 
 
 def VPExtract(verbTree) :
-	print "go fast !"
-	print verbTree
+	# print "go fast !"
+	# print verbTree
 
 	labels = [ str(verbTree[i].label()) for i in range(0, len(verbTree)) ]
 
@@ -37,16 +37,28 @@ def VPExtract(verbTree) :
 
 	# case of VB_ NP []
 	else :
+		lst = []
+		
 		dct = {}
 		dct['main'] = " ".join(verbTree[0].leaves())
 		# dealing with patient NP
-		nps = NPExtract(verbTree[1])
-
-		
-
 		if len(verbTree) == 3 :
-			dct['adverb'] = " ".join(verbTree[0].leaves())
+			dct['adverb'] = " ".join(verbTree[2].leaves())
+		else :
+			dct['adverb'] = None;
 
+		nps = np_parser.NPExtract(verbTree[1])
+		for entry in nps :
+			tmp = {}
+			if entry['noun'] is not None :
+				tmp['main'] = dct['main']
+				tmp['adverb'] = dct['adverb']
+				tmp['np'] = entry
+				lst.append(tmp)
+
+				
+		
+		return lst
 		# if nps is a list with more the 1 element, copy dct to more elements in the list
 
 
